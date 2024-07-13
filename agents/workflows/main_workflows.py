@@ -24,7 +24,3 @@ graph.add_node(progress_tracker)
 # Define the workflow (e.g., Workout Planner -> Nutrition Advisor -> Progress Tracker)
 graph.add_edge(workout_planner, nutrition_advisor)
 graph.add_edge(nutrition_advisor, progress_tracker)
-
-
-
-
