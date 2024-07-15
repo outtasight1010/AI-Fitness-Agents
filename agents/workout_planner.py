@@ -1,9 +1,11 @@
-from langchain import LLM, PromptTemplate, generate
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+from langchain.llms import OpenAI
 
 class WorkoutPlanner:
     def __init__(self):
-        self.llm = LLM()
-    #Prompt creation
+        self.llm = OpenAI()
+
     def create_plan(self, user_preferences):
         workout_prompt = """
         You are a fitness coach. Create a personalized workout plan for the user based on the following preferences:
@@ -13,9 +15,10 @@ class WorkoutPlanner:
 
         Provide a weekly workout plan with exercises, sets, and repetitions.
         """
-        # An example of a generated workout, according to goal, experience level
-        prompt = PromptTemplate(workout_prompt)
-        input_text = prompt.format(goal=user_preferences['goal'], experience=user_preferences['experience'])
-        plan = generate(self.llm, input_text)
+
+        prompt = PromptTemplate(input_variables=["goal", "experience"], template=workout_prompt)
+        chain = LLMChain(prompt=prompt, llm=self.llm)
+        plan = chain.run({"goal": user_preferences['goal'], "experience": user_preferences['experience']})
         return plan
+
 

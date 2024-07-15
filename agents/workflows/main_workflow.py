@@ -20,12 +20,12 @@ def main():
         "weekly_summary": "None"
     }
 
-    # Initialize agents
+    # Initializing the agents
     workout_planner_agent = WorkoutPlanner()
     nutrition_advisor_agent = NutritionAdvisor()
     progress_tracker_agent = ProgressTracker()
 
-    # Get plans and progress
+    # Plans and progress
     workout_plan = workout_planner_agent.create_plan(user_preferences)
     diet_plan = nutrition_advisor_agent.create_plan(user_preferences)
     progress = progress_tracker_agent.track(user_preferences)
