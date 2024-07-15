@@ -1,20 +1,21 @@
-from langchain import LLM, 
+from langchain import LLM, PromptTemplate, generate
+
 class WorkoutPlanner:
     def __init__(self):
-        pass
-
+        self.llm = LLM()
+    #Prompt creation
     def create_plan(self, user_preferences):
-        # Mock implementation of workout plan creation
-        goal = user_preferences.get("goal", "general fitness")
-        experience = user_preferences.get("experience", "beginner")
-        
-        plan = {
-            "goal": goal,
-            "experience": experience,
-            "workouts": [
-                {"day": "Monday", "exercise": "Push-ups", "reps": 10},
-                {"day": "Wednesday", "exercise": "Squats", "reps": 15},
-                {"day": "Friday", "exercise": "Plank", "time": "1 min"}
-            ]
-        }
+        workout_prompt = """
+        You are a fitness coach. Create a personalized workout plan for the user based on the following preferences:
+
+        - Goal: {goal}
+        - Experience: {experience}
+
+        Provide a weekly workout plan with exercises, sets, and repetitions.
+        """
+        # An example of a generated workout, according to goal, experience level
+        prompt = PromptTemplate(workout_prompt)
+        input_text = prompt.format(goal=user_preferences['goal'], experience=user_preferences['experience'])
+        plan = generate(self.llm, input_text)
         return plan
+
