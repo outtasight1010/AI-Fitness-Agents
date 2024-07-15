@@ -1,8 +1,10 @@
-from langchain import LLM, PromptTemplate, generate
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+from langchain.llms import OpenAI
 
 class ProgressTracker:
     def __init__(self):
-        self.llm = LLM()
+        self.llm = OpenAI()
 
     def track(self, user_preferences):
         progress_prompt = """
@@ -16,7 +18,13 @@ class ProgressTracker:
         Provide feedback and motivation to help the user stay on track.
         """
 
-        prompt = PromptTemplate(progress_prompt)
-        input_text = prompt.format(goal=user_preferences['goal'], completed_workouts=user_preferences.get('completed_workouts', []), dietary_adherence=user_preferences.get('dietary_adherence', 'None'), weekly_summary=user_preferences.get('weekly_summary', 'None'))
-        progress = generate(self.llm, input_text)
+        prompt = PromptTemplate(input_variables=["goal", "completed_workouts", "dietary_adherence", "weekly_summary"], template=progress_prompt)
+        chain = LLMChain(prompt=prompt, llm=self.llm)
+        progress = chain.run({
+            "goal": user_preferences['goal'],
+            "completed_workouts": user_preferences.get('completed_workouts', []),
+            "dietary_adherence": user_preferences.get('dietary_adherence', 'None'),
+            "weekly_summary": user_preferences.get('weekly_summary', 'None')
+        })
         return progress
+
