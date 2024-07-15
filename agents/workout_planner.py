@@ -1,3 +1,4 @@
+from langchain import LLM, 
 class WorkoutPlanner:
     def __init__(self):
         pass
