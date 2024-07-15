@@ -1,10 +1,10 @@
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
-from langchain.llms import OpenAI
+from langchain_community.llms import OpenAI
 
 class ProgressTracker:
-    def __init__(self):
-        self.llm = OpenAI()
+    def __init__(self, api_key):
+        self.llm = OpenAI(api_key='R7kMcQYBtm1vpVH2TFycT3BlbkFJQk3eV35CAzfvhFjfBjEd')
 
     def track(self, user_preferences):
         progress_prompt = """
