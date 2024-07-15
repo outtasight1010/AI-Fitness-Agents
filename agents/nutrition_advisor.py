@@ -1,8 +1,10 @@
-from langchain import LLM, PromptTemplate, generate
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+from langchain.llms import OpenAI
 
 class NutritionAdvisor:
     def __init__(self):
-        self.llm = LLM()
+        self.llm = OpenAI()
 
     def create_plan(self, user_preferences):
         nutrition_prompt = """
@@ -15,8 +17,13 @@ class NutritionAdvisor:
         Provide a daily meal plan with breakfast, lunch, dinner, and snacks.
         """
 
-        prompt = PromptTemplate(nutrition_prompt)
-        input_text = prompt.format(goal=user_preferences['goal'], dietary_restrictions=user_preferences.get('dietary_restrictions', 'None'), meal_preferences=user_preferences.get('meal_preferences', 'None'))
-        plan = generate(self.llm, input_text)
+        prompt = PromptTemplate(input_variables=["goal", "dietary_restrictions", "meal_preferences"], template=nutrition_prompt)
+        chain = LLMChain(prompt=prompt, llm=self.llm)
+        plan = chain.run({
+            "goal": user_preferences['goal'],
+            "dietary_restrictions": user_preferences.get('dietary_restrictions', 'None'),
+            "meal_preferences": user_preferences.get('meal_preferences', 'None')
+        })
         return plan
+
 
