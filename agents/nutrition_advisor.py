@@ -5,7 +5,7 @@ from langchain_community.llms import OpenAI
 
 class NutritionAdvisor:
     def __init__(self, api_key):
-        self.llm = OpenAI(api_key='R7kMcQYBtm1vpVH2TFycT3BlbkFJQk3eV35CAzfvhFjfBjEd')
+        self.llm = OpenAI(api_key='api_key')
 
     def create_plan(self, user_preferences):
         nutrition_prompt = """

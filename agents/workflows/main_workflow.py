@@ -13,6 +13,13 @@ from nutrition_advisor import NutritionAdvisor
 from progress_tracker import ProgressTracker
 
 def main():
+    # Get the OpenAI API key from environment variables
+    api_key = os.getenv('OPENAI_API_KEY')
+
+    # Check if the API key is set
+    if not api_key:
+        raise ValueError("No API key found. Please set the OPENAI_API_KEY environment variable.")
+
     # Example user preferences
     user_preferences = {
         "goal": "build muscle",
@@ -24,12 +31,12 @@ def main():
         "weekly_summary": "None"
     }
 
-    # Initializing the agents
-    workout_planner_agent = WorkoutPlanner()
-    nutrition_advisor_agent = NutritionAdvisor()
-    progress_tracker_agent = ProgressTracker()
+    # Initialize agents with API key
+    workout_planner_agent = WorkoutPlanner(api_key=api_key)
+    nutrition_advisor_agent = NutritionAdvisor(api_key=api_key)
+    progress_tracker_agent = ProgressTracker(api_key=api_key)
 
-    # Plans and progress
+    # Get plans and progress
     workout_plan = workout_planner_agent.create_plan(user_preferences)
     diet_plan = nutrition_advisor_agent.create_plan(user_preferences)
     progress = progress_tracker_agent.track(user_preferences)
@@ -41,3 +48,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

@@ -4,7 +4,7 @@ from langchain_community.llms import OpenAI
 
 class ProgressTracker:
     def __init__(self, api_key):
-        self.llm = OpenAI(api_key='R7kMcQYBtm1vpVH2TFycT3BlbkFJQk3eV35CAzfvhFjfBjEd')
+        self.llm = OpenAI(api_key= api_key)
 
     def track(self, user_preferences):
         progress_prompt = """
