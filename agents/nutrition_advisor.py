@@ -1,11 +1,16 @@
+import requests
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
-from langchain.llms import OpenAI
 from langchain_community.llms import OpenAI
 
 class NutritionAdvisor:
-    def __init__(self, api_key):
-        self.llm = OpenAI(api_key='api_key')
+    def __init__(self, api_key, tavily_api_key):
+        self.llm = OpenAI(api_key=api_key)
+        self.tavily_api_key = tavily_api_key
+
+    def fetch_data_from_tavily(self, query):
+        response = requests.get(f"https://api.tavily.com/query?query={query}&api_key={self.tavily_api_key}")
+        return response.json()
 
     def create_plan(self, user_preferences):
         nutrition_prompt = """
@@ -25,6 +30,12 @@ class NutritionAdvisor:
             "dietary_restrictions": user_preferences.get('dietary_restrictions', 'None'),
             "meal_preferences": user_preferences.get('meal_preferences', 'None')
         })
+
+        # Optionally fetch additional data from Tavily
+        additional_data = self.fetch_data_from_tavily("dietary tips for muscle building")
+        plan["additional_data"] = additional_data
+
         return plan
+
 
 
