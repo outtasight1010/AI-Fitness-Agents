@@ -1,6 +1,5 @@
 from langchain.prompts import PromptTemplate
 from langchain_openai import OpenAI
-from langchain.chains import SequentialChain
 
 class ProgressTracker:
     def __init__(self, api_key, tavily_api_key):
@@ -20,7 +19,7 @@ class ProgressTracker:
         """
 
         prompt = PromptTemplate(input_variables=["goal", "completed_workouts", "dietary_adherence", "weekly_summary"], template=progress_prompt)
-        chain = SequentialChain([prompt, self.llm])
+        prompt_text = prompt.format(goal=user_preferences['goal'], completed_workouts=user_preferences['completed_workouts'], dietary_adherence=user_preferences['dietary_adherence'], weekly_summary=user_preferences['weekly_summary'])
 
         input_variables = {
             "goal": user_preferences['goal'],
@@ -31,13 +30,15 @@ class ProgressTracker:
         print(f"Input Variables: {input_variables}")
 
         try:
-            progress = chain(input_variables)
+            response = self.llm.generate(prompt_text)
+            progress = response['choices'][0]['text'].strip()
             print(f"Generated Progress: {progress}")
         except Exception as e:
-            print(f"Error during chain execution: {e}")
+            print(f"Error during LLM generate: {e}")
             progress = {}
 
         return progress
+
 
 
 
