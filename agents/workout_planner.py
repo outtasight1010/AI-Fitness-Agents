@@ -24,11 +24,24 @@ class WorkoutPlanner:
 
         prompt = PromptTemplate(input_variables=["goal", "experience"], template=workout_prompt)
         chain = LLMChain(prompt=prompt, llm=self.llm)
-        plan = chain.run({"goal": user_preferences['goal'], "experience": user_preferences['experience']})
 
-        # Optionally fetch additional data from Tavily
+        # Debug prints to check the prompt and the user preferences
+        print(f"User Preferences: {user_preferences}")
+        input_variables = {"goal": user_preferences['goal'], "experience": user_preferences['experience']}
+        print(f"Input Variables: {input_variables}")
+
+        try:
+            plan = chain.run(input_variables)
+            print(f"Generated Plan: {plan}")
+        except Exception as e:
+            print(f"Error during chain.run: {e}")
+            plan = {}
+
+        # Fetch additional data from Tavily
         additional_data = self.fetch_data_from_tavily("fitness tips for beginners")
         plan["additional_data"] = additional_data
 
         return plan
+
+
 

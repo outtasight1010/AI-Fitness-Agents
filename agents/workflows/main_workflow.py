@@ -1,6 +1,7 @@
 import sys
 import os
 from dotenv import load_dotenv
+import networkx as nx
 
 # Load environment variables from .env file
 load_dotenv()
@@ -11,12 +12,15 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from workout_planner import WorkoutPlanner
 from nutrition_advisor import NutritionAdvisor
 from progress_tracker import ProgressTracker
-from langgraph import Graph, Node
 
 def main():
     # Get the API keys from environment variables
     openai_api_key = os.getenv('OPENAI_API_KEY')
     tavily_api_key = os.getenv('TAVILY_API_KEY')
+
+    # Print the keys to ensure they are loaded correctly
+    print(f"OpenAI API Key: {openai_api_key}")
+    print(f"Tavily API Key: {tavily_api_key}")
 
     # Check if the API keys are set
     if not openai_api_key:
@@ -50,23 +54,24 @@ def main():
     print("Diet Plan:", diet_plan)
     print("Progress:", progress)
 
-    # Define nodes for each agent
-    workout_planner_node = Node(name="Workout Planner", function=workout_planner_agent.create_plan, args=[user_preferences])
-    nutrition_advisor_node = Node(name="Nutrition Advisor", function=nutrition_advisor_agent.create_plan, args=[user_preferences])
-    progress_tracker_node = Node(name="Progress Tracker", function=progress_tracker_agent.track, args=[user_preferences])
-
     # Create a graph and add nodes
-    graph = Graph()
-    graph.add_node(workout_planner_node)
-    graph.add_node(nutrition_advisor_node)
-    graph.add_node(progress_tracker_node)
+    graph = nx.DiGraph()
+    graph.add_node("Workout Planner", func=workout_planner_agent.create_plan, args=[user_preferences])
+    graph.add_node("Nutrition Advisor", func=nutrition_advisor_agent.create_plan, args=[user_preferences])
+    graph.add_node("Progress Tracker", func=progress_tracker_agent.track, args=[user_preferences])
 
     # Define the workflow (e.g., Workout Planner -> Nutrition Advisor -> Progress Tracker)
-    graph.add_edge(workout_planner_node, nutrition_advisor_node)
-    graph.add_edge(nutrition_advisor_node, progress_tracker_node)
+    graph.add_edge("Workout Planner", "Nutrition Advisor")
+    graph.add_edge("Nutrition Advisor", "Progress Tracker")
 
     # Run the graph to see the workflow in action
-    graph.run()
+    for node in nx.topological_sort(graph):
+        func = graph.nodes[node]['func']
+        args = graph.nodes[node]['args']
+        result = func(*args)
+        print(f"{node} Result:", result)
 
 if __name__ == "__main__":
     main()
+
+
