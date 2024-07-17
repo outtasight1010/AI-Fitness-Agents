@@ -1,4 +1,3 @@
-import requests
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain_community.llms import OpenAI
@@ -7,10 +6,6 @@ class ProgressTracker:
     def __init__(self, api_key, tavily_api_key):
         self.llm = OpenAI(api_key=api_key)
         self.tavily_api_key = tavily_api_key
-
-    def fetch_data_from_tavily(self, query):
-        response = requests.get(f"https://api.tavily.com/query?query={query}&api_key={self.tavily_api_key}")
-        return response.json()
 
     def track(self, user_preferences):
         progress_prompt = """
@@ -26,15 +21,21 @@ class ProgressTracker:
 
         prompt = PromptTemplate(input_variables=["goal", "completed_workouts", "dietary_adherence", "weekly_summary"], template=progress_prompt)
         chain = LLMChain(prompt=prompt, llm=self.llm)
-        progress = chain.run({
+
+        input_variables = {
             "goal": user_preferences['goal'],
             "completed_workouts": user_preferences.get('completed_workouts', []),
             "dietary_adherence": user_preferences.get('dietary_adherence', 'None'),
             "weekly_summary": user_preferences.get('weekly_summary', 'None')
-        })
+        }
+        print(f"Input Variables: {input_variables}")
 
-        # Optionally fetch additional data from Tavily
-        additional_data = self.fetch_data_from_tavily("motivation tips for fitness")
-        progress["additional_data"] = additional_data
+        try:
+            progress = chain.run(input_variables)
+            print(f"Generated Progress: {progress}")
+        except Exception as e:
+            print(f"Error during chain.run: {e}")
+            progress = {}
 
         return progress
+

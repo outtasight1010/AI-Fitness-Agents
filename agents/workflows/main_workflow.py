@@ -2,6 +2,7 @@ import sys
 import os
 from dotenv import load_dotenv
 import networkx as nx
+import openai
 
 # Load environment variables from .env file
 load_dotenv()
@@ -27,6 +28,9 @@ def main():
         raise ValueError("No OpenAI API key found. Please set the OPENAI_API_KEY environment variable.")
     if not tavily_api_key:
         raise ValueError("No Tavily API key found. Please set the TAVILY_API_KEY environment variable.")
+
+    # Initialize OpenAI client
+    openai.api_key = openai_api_key
 
     # Example user preferences
     user_preferences = {
