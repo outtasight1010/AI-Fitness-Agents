@@ -18,9 +18,7 @@ def main():
     openai_api_key = os.getenv('OPENAI_API_KEY')
     tavily_api_key = os.getenv('TAVILY_API_KEY')
 
-    # Print the keys to ensure they are loaded correctly
-    print(f"OpenAI API Key: {openai_api_key}")
-    print(f"Tavily API Key: {tavily_api_key}")
+    
 
     # Check if the API keys are set
     if not openai_api_key:
