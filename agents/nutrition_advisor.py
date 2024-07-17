@@ -1,6 +1,6 @@
 from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
-from langchain_community.llms import OpenAI
+from langchain_openai import OpenAI
+from langchain.chains import SequentialChain
 
 class NutritionAdvisor:
     def __init__(self, api_key, tavily_api_key):
@@ -19,7 +19,7 @@ class NutritionAdvisor:
         """
 
         prompt = PromptTemplate(input_variables=["goal", "dietary_restrictions", "meal_preferences"], template=nutrition_prompt)
-        chain = LLMChain(prompt=prompt, llm=self.llm)
+        chain = SequentialChain([prompt, self.llm])
 
         input_variables = {
             "goal": user_preferences['goal'],
@@ -29,13 +29,15 @@ class NutritionAdvisor:
         print(f"Input Variables: {input_variables}")
 
         try:
-            plan = chain.run(input_variables)
+            plan = chain(input_variables)
             print(f"Generated Plan: {plan}")
         except Exception as e:
-            print(f"Error during chain.run: {e}")
+            print(f"Error during chain execution: {e}")
             plan = {}
 
         return plan
+
+
 
 
 
